@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "186833b4-ecb4-4105-aa96-bdb391a8e8e7",
+		"name": "Export",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16242568"
+	},
+	"item": [
+		{
+			"name": "ChillpayPayment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var MD5_SecretKey = \"\" // Get SecretKey in Chillpay",
+							"var urlencoded = pm.request.body.urlencoded",
+							"var newCheckSum = \"\"",
+							"urlencoded.each(item => {",
+							"    newCheckSum += item.value",
+							"})",
+							"",
+							"var hashCheckSum = CryptoJS.MD5(newCheckSum + MD5_SecretKey).toString()",
+							"",
+							"if (urlencoded.get(\"CheckSum\") == \"\")",
+							"{",
+							"    urlencoded.remove(\"CheckSum\")",
+							"    urlencoded.add( ",
+							"        {",
+							"            key: \"CheckSum\",",
+							"            value: hashCheckSum",
+							"        }",
+							"    )",
+							"}",
+							"",
+							"",
+							"pm.request.body.update(",
+							"    {",
+							"        mode: \"urlencoded\",",
+							"        urlencoded: urlencoded.all()",
+							"    }",
+							")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "MerchantCode",
+							"value": "",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "OrderNo",
+							"value": "ORDER001",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "CustomerId",
+							"value": "EMP001",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "Amount",
+							"value": "10000",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "PhoneNumber",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "Description",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "ChannelCode",
+							"value": "bank_qrcode",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "Currency",
+							"value": "764",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "LangCode",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "RouteNo",
+							"value": "1",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "IPAddress",
+							"value": "",
+							"description": "require",
+							"type": "text"
+						},
+						{
+							"key": "ApiKey",
+							"value": "",
+							"description": "require, Get in Chillpay",
+							"type": "text"
+						},
+						{
+							"key": "TokenFlag",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "CreditToken",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "CreditMonth",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "ShopId",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "ProductImageUrl",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "CustEmail",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "CardType",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "CheckSum",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://sandbox-appsrv2.chillpay.co/api/v2/Payment/",
+					"protocol": "https",
+					"host": [
+						"sandbox-appsrv2",
+						"chillpay",
+						"co"
+					],
+					"path": [
+						"api",
+						"v2",
+						"Payment",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
