@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: P@ssw0rd
+      ACCEPT_EULA: Y
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "1433:1433"
+    networks:
+      - dotnet-network
+networks:
+  dotnet-network:
