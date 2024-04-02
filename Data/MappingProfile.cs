@@ -1,5 +1,6 @@
 using App.Models;
 using App.Models.Dtos;
+using App.Models.Requests;
 using AutoMapper;
 
 namespace App.Data
@@ -9,6 +10,7 @@ namespace App.Data
         public MappingProfile()
         {
             CreateMap<PaymentHistory, GetPaymentHistoryDto>();
+            CreateMap<ChillpayRequest, ChillpayPostBodyDto>();
         }
     }
 }
