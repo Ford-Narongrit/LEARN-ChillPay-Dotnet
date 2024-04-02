@@ -35,4 +35,19 @@ public class ChillpayController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
         }
     }
+
+    [HttpPost, Route("CallBack")]
+    public IActionResult CallBack(ChillpayCallBackRequest request)
+    {
+        try
+        {
+            Console.WriteLine("CallBack Work!!!");
+            return Ok("Success");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
+        }
+    }
 }
