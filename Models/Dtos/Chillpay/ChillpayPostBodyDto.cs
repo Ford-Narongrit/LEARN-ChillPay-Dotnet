@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace App.Models.Requests;
 
 public class ChillpayPostBodyDto
@@ -25,7 +28,17 @@ public class ChillpayPostBodyDto
 
     public string GetCheckSum(string MD5Secret)
     {
-        
-        return "";
+        try
+        {
+            string SumString = $"{MerchantCode}{OrderNo}{CustomerId}{Amount}{PhoneNumber}{Description}{ChannelCode}{Currency}{LangCode}{RouteNo}{IPAddress}{ApiKey}{TokenFlag}{CreditToken}{CreditMonth}{ShopId}{ProductImageUrl}{CustEmail}{CardType}";
+            Console.WriteLine(SumString);
+            byte[] hashBytes = MD5.HashData(Encoding.UTF8.GetBytes(SumString + MD5Secret));
+            string CheckSum = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return CheckSum;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to generate CheckSum", ex);
+        }
     }
 }

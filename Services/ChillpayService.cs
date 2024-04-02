@@ -18,7 +18,7 @@ public class ChillpayService : IChillpayService
 
 
     public ChillpayService(
-        IHttpClientFactory httpClient, 
+        IHttpClientFactory httpClient,
         IConfiguration configuration,
         IMapper mapper)
     {
@@ -29,18 +29,15 @@ public class ChillpayService : IChillpayService
 
     public async Task<OperationResult<ChillpayResponseDto>> Payment(ChillpayRequest request)
     {
-        // Call Chillpay API
-        string baseUrl = "https://sandbox-appsrv2.chillpay.co/api/v2/Payment/";
-        string merchantCode = _configuration["ChillpaySettings:MerchantCode"]!;
-        string apiKey = _configuration["ChillpaySettings:ApiKey"]!;
-        string MD5Secret = _configuration["ChillpaySettings:MD5Secret"]!;
-
+        // pack payload
         var chillpayBody = _mapper.Map<ChillpayRequest, ChillpayPostBodyDto>(request);
-        chillpayBody.MerchantCode = merchantCode;
-        chillpayBody.ApiKey = apiKey;
-        chillpayBody.CheckSum = chillpayBody.GetCheckSum(MD5Secret);
+        chillpayBody.MerchantCode = _configuration["ChillpaySettings:MerchantCode"]!;
+        chillpayBody.ApiKey = _configuration["ChillpaySettings:ApiKey"]!;
+        chillpayBody.CheckSum = chillpayBody.GetCheckSum(_configuration["ChillpaySettings:MD5SecretKey"]!);
 
-        HttpResponseMessage responseMessage = await _httpClient.CreateClient().PostAsJsonAsync(baseUrl, request);
+        // call Chillpay API
+        string baseUrl = "https://sandbox-appsrv2.chillpay.co/api/v2/Payment/";
+        HttpResponseMessage responseMessage = await _httpClient.CreateClient().PostAsJsonAsync(baseUrl, chillpayBody);
         if (!responseMessage.IsSuccessStatusCode)
         {
             return OperationResult<ChillpayResponseDto>.FailureResult("Failed to call Chillpay API");
