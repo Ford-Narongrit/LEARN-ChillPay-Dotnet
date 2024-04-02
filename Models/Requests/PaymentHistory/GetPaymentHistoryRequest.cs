@@ -1,4 +1,4 @@
-namespace App.Models.Dtos;
+namespace App.Models.Requests;
 public class GetPaymentHistoryRequest
 {
     public int Id { get; set; }
