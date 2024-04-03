@@ -10,7 +10,7 @@ public class PaymentHistory
     [Key]
     public int Id { get; set; }
     [Required]
-    public string OrderId { get; set; }
+    public required string OrderId { get; set; }
     [Required]
     public float PaidPoint { get; set; }
     [Required]
