@@ -2,7 +2,7 @@ namespace App.Models.Dtos;
 public class GetPaymentHistoryDto
 {
     public int Id { get; set; }
-    public int OrderId { get; set; }
+    public required string OrderId { get; set; }
     public float PaidPoint { get; set; }
     public float Amount { get; set; }
     public decimal PointConversionValue { get; set; }
