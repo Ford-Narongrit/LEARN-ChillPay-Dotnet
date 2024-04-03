@@ -10,8 +10,11 @@ services:
       - SYS_PTRACE
     ports:
       - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
     networks:
       - dotnet-network
+      
   app:
     build:
       context: .
@@ -24,16 +27,19 @@ services:
       - sqlserver
     networks:
       - dotnet-network
+
   localtunnel:
     image: efrecon/localtunnel
     restart: unless-stopped
     command:
       --local-host app --port 5001 --subdomain chillpay-dev
-    links:
-      - app
     depends_on:
       - app
     networks:
       - dotnet-network
+      
+volumes:
+  sqlserver-data:
+
 networks:
   dotnet-network:
