@@ -1,3 +1,6 @@
+using App.Helpers;
+using App.Models.Dtos;
+using App.Models.Enums;
 using App.Models.Requests;
 using App.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +12,15 @@ public class ChillpayController : ControllerBase
 {
 
     private readonly IChillpayService _chillpayService;
-    public ChillpayController(IChillpayService chillpayService)
+    private readonly IPaymentHistoryServices _paymentHistoryServices;
+    public ChillpayController(
+        IChillpayService chillpayService,
+        IPaymentHistoryServices paymentHistoryServices)
     {
         _chillpayService = chillpayService;
+        _paymentHistoryServices = paymentHistoryServices;
+        _paymentHistoryServices = paymentHistoryServices;
+
     }
 
     [HttpPost, Route("Payment")]
@@ -22,6 +31,20 @@ public class ChillpayController : ControllerBase
             var result = await _chillpayService.Payment(request);
             if (result.Success)
             {
+                var response = result.Result!;
+                var newPayment = _paymentHistoryServices.Add(
+                    new AddPaymentHistoryRequest
+                    {
+                        OrderId = response.OrderNo,
+                        Amount = response.Amount,
+                        PaidPoint = response.Amount,
+                        PointConversionValue = 1,
+                        CurrencyConversionValue = 1,
+                        PaymentMethod = "QRCODE",
+                        PaymentStatus = "PENDING",
+                        ChillpayExpiredDatetime = DateTime.Now,
+                    }
+                );
                 return Ok(result.Result);
             }
             else
@@ -37,12 +60,34 @@ public class ChillpayController : ControllerBase
     }
 
     [HttpPost, Route("CallBack")]
-    public IActionResult CallBack(ChillpayCallBackRequest request)
+    public IActionResult CallBack([FromForm] ChillpayCallBackResultRequest request)
     {
         try
         {
-            Console.WriteLine("CallBack Work!!!");
-            return Ok("Success");
+            if (request.Status == "SUCCESS")
+            {
+                var result = _paymentHistoryServices.ChangeStatusToSuccess(request.OrderNo);
+                if (result.Success)
+                {
+                    return Ok(result.Result);
+                }
+                else
+                {
+                    return BadRequest(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var result = _paymentHistoryServices.ChangeStatusToFail(request.OrderNo);
+                if (result.Success)
+                {
+                    return Ok(result.Result);
+                }
+                else
+                {
+                    return BadRequest(result.ErrorMessage);
+                }
+            }
         }
         catch (Exception ex)
         {

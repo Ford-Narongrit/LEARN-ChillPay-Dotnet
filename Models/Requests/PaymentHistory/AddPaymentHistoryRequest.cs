@@ -1,7 +1,7 @@
 namespace App.Models.Requests;
 public class AddPaymentHistoryRequest
 {
-    public int OrderId { get; set; }
+    public required string OrderId { get; set; }
     public float PaidPoint { get; set; }
     public float Amount { get; set; }
     public decimal PointConversionValue { get; set; }

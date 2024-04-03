@@ -2,6 +2,7 @@ using App.Data;
 using App.Helpers;
 using App.Models;
 using App.Models.Dtos;
+using App.Models.Enums;
 using App.Models.Requests;
 using AutoMapper;
 
@@ -11,6 +12,8 @@ public interface IPaymentHistoryServices
     OperationResult<List<GetPaymentHistoryDto>> GetAll();
     OperationResult<GetPaymentHistoryDto> Get(int paymentHistoryId);
     OperationResult<GetPaymentHistoryDto> Add(AddPaymentHistoryRequest request);
+    OperationResult<GetPaymentHistoryDto> ChangeStatusToSuccess(string orderNo);
+    OperationResult<GetPaymentHistoryDto> ChangeStatusToFail(string orderNo);
 }
 
 public class PaymentHistoryServices : IPaymentHistoryServices
@@ -75,6 +78,54 @@ public class PaymentHistoryServices : IPaymentHistoryServices
 
             var resultDto = _mapper.Map<PaymentHistory, GetPaymentHistoryDto>(paymentHistory);
 
+            return OperationResult<GetPaymentHistoryDto>.SuccessResult(resultDto);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<GetPaymentHistoryDto>.FailureResult(ex.Message);
+        }
+    }
+
+    public OperationResult<GetPaymentHistoryDto> ChangeStatusToSuccess(string orderNo)
+    {
+        try
+        {
+            var paymentHistory = _dbContext.PaymentHistories.FirstOrDefault(x => x.OrderId == orderNo);
+            if (paymentHistory == null)
+            {
+                return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found");
+            }
+
+            paymentHistory.PaymentStatus = EPaymentStatus.SUCCESS;
+            paymentHistory.UpdateDatetime = DateTime.Now;
+
+            _dbContext.SaveChanges();
+
+            var resultDto = _mapper.Map<PaymentHistory, GetPaymentHistoryDto>(paymentHistory);
+            return OperationResult<GetPaymentHistoryDto>.SuccessResult(resultDto);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<GetPaymentHistoryDto>.FailureResult(ex.Message);
+        }
+    }
+
+    public OperationResult<GetPaymentHistoryDto> ChangeStatusToFail(string orderNo)
+    {
+        try
+        {
+            var paymentHistory = _dbContext.PaymentHistories.FirstOrDefault(x => x.OrderId == orderNo);
+            if (paymentHistory == null)
+            {
+                return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found");
+            }
+
+            paymentHistory.PaymentStatus = EPaymentStatus.FAILED;
+            paymentHistory.UpdateDatetime = DateTime.Now;
+
+            _dbContext.SaveChanges();
+
+            var resultDto = _mapper.Map<PaymentHistory, GetPaymentHistoryDto>(paymentHistory);
             return OperationResult<GetPaymentHistoryDto>.SuccessResult(resultDto);
         }
         catch (Exception ex)
