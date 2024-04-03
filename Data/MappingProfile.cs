@@ -9,7 +9,11 @@ namespace App.Data
     {
         public MappingProfile()
         {
+            // PaymentHistory
             CreateMap<PaymentHistory, GetPaymentHistoryDto>();
+            CreateMap<AddPaymentHistoryRequest, PaymentHistory>();
+
+            // Chillpay
             CreateMap<ChillpayRequest, ChillpayPostBodyDto>();
         }
     }

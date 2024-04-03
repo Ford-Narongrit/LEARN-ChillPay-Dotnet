@@ -1,3 +1,4 @@
+using App.Models.Requests;
 using App.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,28 @@ public class PaymentHistoryController : ControllerBase
         try
         {
             var result = _paymentHistoryServices.GetAll();
+            if (result.Success)
+            {
+                return Ok(result.Result);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
+        }
+    }
+
+    [HttpPost, Route("CreatePaymentHistory")]
+    public IActionResult CreatePaymentHistory(AddPaymentHistoryRequest request)
+    {
+        try
+        {
+            var result = _paymentHistoryServices.Add(request);
             if (result.Success)
             {
                 return Ok(result.Result);
