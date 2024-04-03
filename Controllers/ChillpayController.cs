@@ -64,7 +64,7 @@ public class ChillpayController : ControllerBase
     {
         try
         {
-            if (request.Status == "SUCCESS")
+            if (request.RespCode == 0) // success
             {
                 var result = _paymentHistoryServices.ChangeStatusToSuccess(request.OrderNo);
                 if (result.Success)
