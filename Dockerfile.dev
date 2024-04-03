@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS watch
+WORKDIR /app
+
+# Copy the project files and restore any dependencies (adapt this based on your project structure)
+COPY *.csproj /app
+RUN dotnet restore "/app/chillpayGateway.csproj"
+
+# Copy the remaining source code
+COPY . .
+
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5001"]

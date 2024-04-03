@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge:latest
@@ -9,6 +10,29 @@ services:
       - SYS_PTRACE
     ports:
       - "1433:1433"
+    networks:
+      - dotnet-network
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5001"
+    volumes:
+      - './:/app'
+    depends_on:
+      - sqlserver
+    networks:
+      - dotnet-network
+  localtunnel:
+    image: efrecon/localtunnel
+    restart: unless-stopped
+    command:
+      --local-host app --port 5001 --subdomain chillpay-dev
+    links:
+      - app
+    depends_on:
+      - app
     networks:
       - dotnet-network
 networks:
