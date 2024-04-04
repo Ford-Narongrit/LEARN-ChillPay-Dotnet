@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace App.Models.Dtos;
+namespace App.Models.Requests;
 
 public class ChillpayStatusPostBodyRequest
 {
