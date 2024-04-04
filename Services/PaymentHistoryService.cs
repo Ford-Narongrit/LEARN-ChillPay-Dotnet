@@ -10,8 +10,8 @@ namespace App.Services;
 public interface IPaymentHistoryServices
 {
     OperationResult<List<GetPaymentHistoryDto>> GetAll();
-    OperationResult<GetPaymentHistoryDto> Get(int paymentHistoryId);
-    OperationResult<GetPaymentHistoryDto> Add(AddPaymentHistoryRequest request);
+    OperationResult<GetPaymentHistoryDto> GetById(int paymentHistoryId);
+    OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryRequest request);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToSuccess(string orderNo);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToFail(string orderNo);
 }
@@ -46,14 +46,14 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         }
     }
 
-    public OperationResult<GetPaymentHistoryDto> Get(int paymentHistoryId)
+    public OperationResult<GetPaymentHistoryDto> GetById(int paymentHistoryId)
     {
         try
         {
             var result = _dbContext.PaymentHistories.FirstOrDefault(x => x.Id == paymentHistoryId);
             if (result == null)
             {
-                return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found");
+                return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found", StatusCodes.Status404NotFound);
             }
             var resultDto = _mapper.Map<PaymentHistory, GetPaymentHistoryDto>(result);
 
@@ -65,7 +65,25 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         }
     }
 
-    public OperationResult<GetPaymentHistoryDto> Add(AddPaymentHistoryRequest request)
+    public OperationResult<GetPaymentHistoryDto> GetByOrderId(AddPaymentHistoryRequest request)
+    {
+        try
+        {
+            var result = _dbContext.PaymentHistories.FirstOrDefault(x => x.OrderId == request.OrderId);
+            if (result == null)
+            {
+                return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found", StatusCodes.Status404NotFound);
+            }
+            var resultDto = _mapper.Map<PaymentHistory, GetPaymentHistoryDto>(result);
+            return OperationResult<GetPaymentHistoryDto>.SuccessResult(resultDto);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<GetPaymentHistoryDto>.FailureResult(ex.Message);
+        }
+    }
+
+    public OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryRequest request)
     {
         try
         {
@@ -131,6 +149,27 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         catch (Exception ex)
         {
             return OperationResult<GetPaymentHistoryDto>.FailureResult(ex.Message);
+        }
+    }
+
+    public OperationResult<string> Delete(int paymentHistoryId)
+    {
+        try
+        {
+            var paymentHistory = _dbContext.PaymentHistories.FirstOrDefault(x => x.Id == paymentHistoryId);
+            if (paymentHistory == null)
+            {
+                return OperationResult<string>.FailureResult("Payment history not found", StatusCodes.Status404NotFound);
+            }
+
+            _dbContext.PaymentHistories.Remove(paymentHistory);
+            _dbContext.SaveChanges();
+
+            return OperationResult<string>.SuccessResult("Payment history deleted");
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<string>.FailureResult(ex.Message);
         }
     }
 }

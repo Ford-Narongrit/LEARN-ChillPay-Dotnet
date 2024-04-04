@@ -21,6 +21,9 @@ public class ApplicationDBContext : DbContext
     // OnCreate Model
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<PaymentHistory>()
+            .HasIndex(u => u.OrderId)
+            .IsUnique();
         base.OnModelCreating(builder);
     }
 
