@@ -12,7 +12,7 @@ public interface IPaymentHistoryServices
     OperationResult<List<GetPaymentHistoryDto>> GetAll();
     OperationResult<GetPaymentHistoryDto> GetById(int paymentHistoryId);
     OperationResult<GetPaymentHistoryDto> GetByOrderId(string OrderNo);
-    OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryRequest request);
+    OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryDto request);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToSuccess(string orderNo);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToFail(string orderNo);
     OperationResult<string> Delete(int paymentHistoryId);
@@ -85,11 +85,11 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         }
     }
 
-    public OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryRequest request)
+    public OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryDto request)
     {
         try
         {
-            var paymentHistory = _mapper.Map<AddPaymentHistoryRequest, PaymentHistory>(request);
+            var paymentHistory = _mapper.Map<AddPaymentHistoryDto, PaymentHistory>(request);
             paymentHistory.CreateDatetime = DateTime.Now;
             paymentHistory.UpdateDatetime = DateTime.Now;
 

@@ -1,5 +1,7 @@
+using App.Models.Dtos;
 using App.Models.Requests;
 using App.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers;
@@ -8,9 +10,19 @@ namespace App.Controllers;
 public class PaymentHistoryController : ControllerBase
 {
     private readonly IPaymentHistoryServices _paymentHistoryServices;
-    public PaymentHistoryController(IPaymentHistoryServices paymentHistoryServices)
+    private readonly IMapper _mapperService;
+    private readonly IChillpayService _chillPayServices;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public PaymentHistoryController(
+        IMapper mapperService,
+        IPaymentHistoryServices paymentHistoryServices,
+        IChillpayService chillPayServices,
+        IHttpContextAccessor httpContextAccessor)
     {
+        _chillPayServices = chillPayServices;
+        _httpContextAccessor = httpContextAccessor;
         _paymentHistoryServices = paymentHistoryServices;
+        _mapperService = mapperService;
     }
     [HttpGet, Route("GetPaymentHistories")]
     public IActionResult GetPaymentHistories()
@@ -57,18 +69,33 @@ public class PaymentHistoryController : ControllerBase
     }
 
     [HttpPost, Route("CreatePaymentHistory")]
-    public IActionResult CreatePaymentHistory(AddPaymentHistoryRequest request)
+    public async Task<IActionResult> CreatePaymentHistory(AddPaymentHistoryRequest request)
     {
         try
         {
-            var result = _paymentHistoryServices.Create(request);
-            if (result.Success)
+            var remoteIpAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+            if (string.IsNullOrEmpty(remoteIpAddress))
             {
-                return Ok(result.Result);
+                return BadRequest("Remote IP Address is empty");
+            }
+
+            var newPaymentHistory = _mapperService.Map<AddPaymentHistoryRequest, AddPaymentHistoryDto>(request);
+            var paymentResult = _paymentHistoryServices.Create(newPaymentHistory);
+
+            if (!paymentResult.Success)
+            {
+                return BadRequest(paymentResult.ErrorMessage);
+            }
+
+            var newChillpayRequest = _mapperService.Map<AddPaymentHistoryRequest, ChillpayRequest>(request);
+            var ChillpayResult = await _chillPayServices.Payment(newChillpayRequest, remoteIpAddress);
+            if (ChillpayResult.Success)
+            {
+                return Ok(ChillpayResult.Result);
             }
             else
             {
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(ChillpayResult.ErrorMessage);
             }
         }
         catch (Exception ex)
