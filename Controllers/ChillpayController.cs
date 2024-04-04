@@ -19,8 +19,6 @@ public class ChillpayController : ControllerBase
     {
         _chillpayService = chillpayService;
         _paymentHistoryServices = paymentHistoryServices;
-        _paymentHistoryServices = paymentHistoryServices;
-
     }
 
     [HttpPost, Route("Payment")]
@@ -28,7 +26,13 @@ public class ChillpayController : ControllerBase
     {
         try
         {
-            var result = await _chillpayService.Payment(request);
+            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (string.IsNullOrEmpty(remoteIpAddress))
+            {
+                return BadRequest("Remote IP Address is empty");
+            }
+
+            var result = await _chillpayService.Payment(request, remoteIpAddress);
             if (result.Success)
             {
                 var response = result.Result!;
@@ -42,7 +46,8 @@ public class ChillpayController : ControllerBase
                         CurrencyConversionValue = 1,
                         PaymentMethod = "QRCODE",
                         PaymentStatus = "PENDING",
-                        ChillpayExpiredDatetime = DateTime.Now,
+                        ChillpayTransactionId = response.TransactionId,
+                        ChillpayExpiredDatetime = DateTimeHelper.ParseDateTime(response.ExpiredDate),
                     }
                 );
                 return Ok(result.Result);

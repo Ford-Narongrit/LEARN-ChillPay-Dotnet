@@ -11,7 +11,6 @@ public class ChillpayRequest
     public required int Currency { get; set; }
     public string? LangCode { get; set; }
     public required int RouteNo { get; set; }
-    public required string IPAddress { get; set; }
     public string? TokenFlag { get; set; }
     public string? CreditToken { get; set; }
     public string? CreditMonth { get; set; }

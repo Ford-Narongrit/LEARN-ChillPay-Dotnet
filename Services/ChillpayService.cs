@@ -7,7 +7,7 @@ namespace App.Services;
 
 public interface IChillpayService
 {
-    Task<OperationResult<ChillpayResponseDto>> Payment(ChillpayRequest request);
+    Task<OperationResult<ChillpayResponseDto>> Payment(ChillpayRequest request, string remoteIpAddress);
 }
 
 public class ChillpayService : IChillpayService
@@ -27,10 +27,11 @@ public class ChillpayService : IChillpayService
         _mapper = mapper;
     }
 
-    public async Task<OperationResult<ChillpayResponseDto>> Payment(ChillpayRequest request)
+    public async Task<OperationResult<ChillpayResponseDto>> Payment(ChillpayRequest request, string remoteIpAddress)
     {
         // pack payload
         var chillpayBody = _mapper.Map<ChillpayRequest, ChillpayPostBodyDto>(request);
+        chillpayBody.IPAddress = remoteIpAddress;
         chillpayBody.MerchantCode = _configuration["ChillpaySettings:MerchantCode"]!;
         chillpayBody.ApiKey = _configuration["ChillpaySettings:ApiKey"]!;
         chillpayBody.CheckSum = chillpayBody.GetCheckSum(_configuration["ChillpaySettings:MD5SecretKey"]!);
