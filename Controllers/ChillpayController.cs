@@ -25,6 +25,7 @@ public class ChillpayController : ControllerBase
             var result = await _chillpayService.PaymentStatus(transactionId);
             if (result.Success)
             {
+                //TODO save payment status
                 return Ok(result.Result);
             }
 
@@ -42,6 +43,7 @@ public class ChillpayController : ControllerBase
     {
         try
         {
+            //TODO save payment status
             return Ok(request);
         }
         catch (Exception ex)
@@ -56,6 +58,7 @@ public class ChillpayController : ControllerBase
     {
         try
         {
+            //TODO save payment status
             return Ok(request);
         }
         catch (Exception ex)
