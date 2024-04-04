@@ -2,6 +2,7 @@ namespace App.Models.Enums
 {
     public enum ECurrencyCode
     {
+        INVALID = 0,
         THB = 764,
         USD = 840,
         EUR = 978,

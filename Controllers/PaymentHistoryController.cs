@@ -88,6 +88,7 @@ public class PaymentHistoryController : ControllerBase
             }
 
             var newChillpayRequest = _mapperService.Map<AddPaymentHistoryRequest, ChillpayRequest>(request);
+            // return Ok(newChillpayRequest);
             var ChillpayResult = await _chillPayServices.Payment(newChillpayRequest, remoteIpAddress);
             if (ChillpayResult.Success)
             {

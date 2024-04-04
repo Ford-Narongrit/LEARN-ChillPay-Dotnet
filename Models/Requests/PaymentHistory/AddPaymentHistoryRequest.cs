@@ -13,7 +13,6 @@ public class AddPaymentHistoryRequest
     public required string CustomerId { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Description { get; set; }
-    public required string ChannelCode { get; set; }
     public required int Currency { get; set; }
     public string? LangCode { get; set; }
     public required int RouteNo { get; set; }

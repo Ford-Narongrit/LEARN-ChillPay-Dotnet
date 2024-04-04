@@ -2,7 +2,8 @@ namespace App.Models.Enums
 {
     public enum EPaymentMethod
     {
-        QRCODE,
-        CREDIT_CARD,
+        INVALID = 0,
+        QRCODE = 17,
+        CREDIT_CARD = 11,
     }
 }
