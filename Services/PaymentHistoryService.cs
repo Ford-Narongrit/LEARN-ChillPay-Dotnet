@@ -90,8 +90,8 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         try
         {
             var paymentHistory = _mapper.Map<AddPaymentHistoryDto, PaymentHistory>(request);
-            paymentHistory.CreateDatetime = DateTime.Now;
-            paymentHistory.UpdateDatetime = DateTime.Now;
+            paymentHistory.CreateDatetime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+            paymentHistory.UpdateDatetime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
 
             _dbContext.PaymentHistories.Add(paymentHistory);
             _dbContext.SaveChanges();
@@ -117,7 +117,7 @@ public class PaymentHistoryServices : IPaymentHistoryServices
             }
 
             paymentHistory.PaymentStatus = EPaymentStatus.SUCCESS;
-            paymentHistory.UpdateDatetime = DateTime.Now;
+            paymentHistory.UpdateDatetime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
 
             _dbContext.SaveChanges();
 
@@ -141,7 +141,7 @@ public class PaymentHistoryServices : IPaymentHistoryServices
             }
 
             paymentHistory.PaymentStatus = EPaymentStatus.FAILED;
-            paymentHistory.UpdateDatetime = DateTime.Now;
+            paymentHistory.UpdateDatetime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
 
             _dbContext.SaveChanges();
 

@@ -12,9 +12,13 @@ public class ChillpayController : ControllerBase
 {
 
     private readonly IChillpayService _chillpayService;
-    public ChillpayController(IChillpayService chillpayService)
+    private readonly IPaymentHistoryServices _paymentHistoryServices;
+    public ChillpayController(
+        IChillpayService chillpayService,
+        IPaymentHistoryServices paymentHistoryServices)
     {
         _chillpayService = chillpayService;
+        _paymentHistoryServices = paymentHistoryServices;
     }
 
     [HttpPost, Route("CheckPaymentStatus/{transactionId}")]
@@ -43,7 +47,16 @@ public class ChillpayController : ControllerBase
     {
         try
         {
-            //TODO save payment status
+            Console.WriteLine("CallBack/Result");
+            if (request.RespCode == (int)EChillpayPaymentStatus.SUCCESS)
+            {
+                var paymentHistory = _paymentHistoryServices.ChangeStatusToSuccess(request.OrderNo);
+            }
+            else
+            {
+                var paymentHistory = _paymentHistoryServices.ChangeStatusToFail(request.OrderNo);
+            }
+
             return Ok(request);
         }
         catch (Exception ex)
@@ -58,7 +71,15 @@ public class ChillpayController : ControllerBase
     {
         try
         {
-            //TODO save payment status
+            Console.WriteLine("CallBack/Background");
+            if (request.PaymentStatus == (int)EChillpayPaymentStatus.SUCCESS)
+            {
+                var paymentHistory = _paymentHistoryServices.ChangeStatusToSuccess(request.OrderNo!);
+            }
+            else
+            {
+                var paymentHistory = _paymentHistoryServices.ChangeStatusToFail(request.OrderNo!);
+            }
             return Ok(request);
         }
         catch (Exception ex)

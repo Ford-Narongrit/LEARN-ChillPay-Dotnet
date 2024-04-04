@@ -1,3 +1,4 @@
+using App.Helpers;
 using App.Models.Dtos;
 using App.Models.Requests;
 using App.Services;
@@ -79,24 +80,25 @@ public class PaymentHistoryController : ControllerBase
                 return BadRequest("Remote IP Address is empty");
             }
 
-            var newPaymentHistory = _mapperService.Map<AddPaymentHistoryRequest, AddPaymentHistoryDto>(request);
-            var paymentResult = _paymentHistoryServices.Create(newPaymentHistory);
-
-            if (!paymentResult.Success)
+            var newChillpayRequest = _mapperService.Map<AddPaymentHistoryRequest, ChillpayRequest>(request);
+            var ChillpayResult = await _chillPayServices.Payment(newChillpayRequest, remoteIpAddress);
+            if (!ChillpayResult.Success)
             {
-                return BadRequest(paymentResult.ErrorMessage);
+                return BadRequest(ChillpayResult.ErrorMessage);
             }
 
-            var newChillpayRequest = _mapperService.Map<AddPaymentHistoryRequest, ChillpayRequest>(request);
-            // return Ok(newChillpayRequest);
-            var ChillpayResult = await _chillPayServices.Payment(newChillpayRequest, remoteIpAddress);
-            if (ChillpayResult.Success)
+            var newPaymentHistory = _mapperService.Map<AddPaymentHistoryRequest, AddPaymentHistoryDto>(request);
+            newPaymentHistory.ChillpayTransactionId = (decimal)ChillpayResult.Result.TransactionId;
+            newPaymentHistory.ChillpayExpiredDatetime = DateTimeHelper.ParseDateTime(ChillpayResult.Result.ExpiredDate);
+            var paymentResult = _paymentHistoryServices.Create(newPaymentHistory);
+            if (!paymentResult.Success)
             {
                 return Ok(ChillpayResult.Result);
             }
+
             else
             {
-                return BadRequest(ChillpayResult.ErrorMessage);
+                return BadRequest(paymentResult.ErrorMessage);
             }
         }
         catch (Exception ex)
