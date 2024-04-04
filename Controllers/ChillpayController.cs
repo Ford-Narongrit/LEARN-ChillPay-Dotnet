@@ -12,13 +12,29 @@ public class ChillpayController : ControllerBase
 {
 
     private readonly IChillpayService _chillpayService;
-    private readonly IPaymentHistoryServices _paymentHistoryServices;
-    public ChillpayController(
-        IChillpayService chillpayService,
-        IPaymentHistoryServices paymentHistoryServices)
+    public ChillpayController(IChillpayService chillpayService)
     {
         _chillpayService = chillpayService;
-        _paymentHistoryServices = paymentHistoryServices;
+    }
+
+    [HttpPost, Route("CheckPaymentStatus/{transactionId}")]
+    public async Task<IActionResult> CheckPaymentStatus(int transactionId)
+    {
+        try
+        {
+            var result = await _chillpayService.PaymentStatus(transactionId);
+            if (result.Success)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result.ErrorMessage);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
+        }
     }
 
     [HttpPost, Route("CallBack/Result")]
@@ -48,6 +64,4 @@ public class ChillpayController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
         }
     }
-
-    
 }
