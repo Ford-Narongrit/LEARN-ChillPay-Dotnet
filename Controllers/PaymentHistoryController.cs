@@ -34,12 +34,56 @@ public class PaymentHistoryController : ControllerBase
         }
     }
 
+    [HttpGet, Route("GetPaymentHistoryById/{id}")]
+    public IActionResult GetPaymentHistoryById(int id)
+    {
+        try
+        {
+            var result = _paymentHistoryServices.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result.Result);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
+        }
+    }
+
     [HttpPost, Route("CreatePaymentHistory")]
     public IActionResult CreatePaymentHistory(AddPaymentHistoryRequest request)
     {
         try
         {
-            var result = _paymentHistoryServices.Add(request);
+            var result = _paymentHistoryServices.Create(request);
+            if (result.Success)
+            {
+                return Ok(result.Result);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred: " + ex.Message);
+        }
+    }
+
+    [HttpDelete, Route("DeletePaymentHistory/{id}")]
+    public IActionResult DeletePaymentHistory(int id)
+    {
+        try
+        {
+            var result = _paymentHistoryServices.Delete(id);
             if (result.Success)
             {
                 return Ok(result.Result);

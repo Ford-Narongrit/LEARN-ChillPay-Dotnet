@@ -11,9 +11,11 @@ public interface IPaymentHistoryServices
 {
     OperationResult<List<GetPaymentHistoryDto>> GetAll();
     OperationResult<GetPaymentHistoryDto> GetById(int paymentHistoryId);
+    OperationResult<GetPaymentHistoryDto> GetByOrderId(string OrderNo);
     OperationResult<GetPaymentHistoryDto> Create(AddPaymentHistoryRequest request);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToSuccess(string orderNo);
     OperationResult<GetPaymentHistoryDto> ChangeStatusToFail(string orderNo);
+    OperationResult<string> Delete(int paymentHistoryId);
 }
 
 public class PaymentHistoryServices : IPaymentHistoryServices
@@ -65,11 +67,11 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         }
     }
 
-    public OperationResult<GetPaymentHistoryDto> GetByOrderId(AddPaymentHistoryRequest request)
+    public OperationResult<GetPaymentHistoryDto> GetByOrderId(string OrderNo)
     {
         try
         {
-            var result = _dbContext.PaymentHistories.FirstOrDefault(x => x.OrderId == request.OrderId);
+            var result = _dbContext.PaymentHistories.FirstOrDefault(x => x.OrderId == OrderNo);
             if (result == null)
             {
                 return OperationResult<GetPaymentHistoryDto>.FailureResult("Payment history not found", StatusCodes.Status404NotFound);
