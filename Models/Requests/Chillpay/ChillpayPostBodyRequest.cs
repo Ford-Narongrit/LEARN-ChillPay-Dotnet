@@ -3,7 +3,7 @@ using System.Text;
 
 namespace App.Models.Requests;
 
-public class ChillpayPostBodyDto
+public class ChillpayPostBodyRequest
 {
     public required string MerchantCode { get; set; }
     public required string OrderNo { get; set; }
@@ -31,7 +31,6 @@ public class ChillpayPostBodyDto
         try
         {
             string SumString = $"{MerchantCode}{OrderNo}{CustomerId}{Amount}{PhoneNumber}{Description}{ChannelCode}{Currency}{LangCode}{RouteNo}{IPAddress}{ApiKey}{TokenFlag}{CreditToken}{CreditMonth}{ShopId}{ProductImageUrl}{CustEmail}{CardType}";
-            Console.WriteLine(SumString);
             byte[] hashBytes = MD5.HashData(Encoding.UTF8.GetBytes(SumString + MD5Secret));
             string CheckSum = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
             return CheckSum;

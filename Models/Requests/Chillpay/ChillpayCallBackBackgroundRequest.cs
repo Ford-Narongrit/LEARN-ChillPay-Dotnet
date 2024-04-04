@@ -1,6 +1,6 @@
 namespace App.Models.Requests;
 
-public class ChillpayCallBackRequest
+public class ChillpayCallBackBackgroundRequest
 {
     public int? TransactionId { get; set; }
     public decimal? Amount { get; set; }
