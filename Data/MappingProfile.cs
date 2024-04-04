@@ -14,7 +14,7 @@ namespace App.Data
             CreateMap<AddPaymentHistoryRequest, PaymentHistory>();
 
             // Chillpay
-            CreateMap<ChillpayRequest, ChillpayPostBodyDto>();
+            CreateMap<ChillpayRequest, ChillpayPostBodyRequest>();
         }
     }
 }
