@@ -91,7 +91,7 @@ public class PaymentHistoryController : ControllerBase
             newPaymentHistory.ChillpayTransactionId = (decimal)ChillpayResult.Result.TransactionId;
             newPaymentHistory.ChillpayExpiredDatetime = DateTimeHelper.ParseDateTime(ChillpayResult.Result.ExpiredDate);
             var paymentResult = _paymentHistoryServices.Create(newPaymentHistory);
-            if (!paymentResult.Success)
+            if (paymentResult.Success)
             {
                 return Ok(ChillpayResult.Result);
             }

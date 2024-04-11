@@ -8,4 +8,6 @@ RUN dotnet restore "/app/chillpayGateway.csproj"
 # Copy the remaining source code
 COPY . .
 
+RUN ["dotnet", "ef", "database", "update"]
+
 CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5001"]
